@@ -5,6 +5,13 @@
 const { SuccessModel, FailModel } = require('../model/resModel')
 const { getList, getDetail, newBlog, updateBlog, delBlog } = require('../controller/blog')
 
+const loginCheck = (req) => {
+    if (!req.session.username) {
+        return Promise.resolve(
+            new FailModel('尚未登录')
+        )
+    }
+}
 
 const handleBlogRouter = (req) => {
     const method = req.method
@@ -13,8 +20,15 @@ const handleBlogRouter = (req) => {
     const blogData = req.body
     const id = query.id
     if (method === 'GET' && path === '/api/blog/list') {
-        const author = query.author || ''
+        let author = query.author || ''
         const keyword = query.keyword || ''
+        if (req.query.isadmin === '1') {
+            const loginCheckResult = loginCheck(req)
+            if (loginCheckResult) {
+                return loginCheckResult
+            }
+            author = req.session.username
+        }
         return getList(author, keyword).then(data => {
             return new SuccessModel(data)
         })
@@ -25,11 +39,19 @@ const handleBlogRouter = (req) => {
         })
     }
     if (method === 'POST' && path === '/api/blog/new') {
-        return newBlog(blogData).then(data => {
+        const loginCheckResult = loginCheck(req)
+        if (loginCheckResult) {
+            return loginCheckResult
+        }
+        return newBlog(blogData, req.session.username).then(data => {
             return new SuccessModel(data)
         })
     }
     if (method === 'POST' && path === '/api/blog/update') {
+        const loginCheckResult = loginCheck(req)
+        if (loginCheckResult) {
+            return loginCheckResult
+        }
         return updateBlog(id, blogData).then(data => {
             if (data) {
                 return new SuccessModel('更新成功')
@@ -39,7 +61,11 @@ const handleBlogRouter = (req) => {
         })
     }
     if (method === 'POST' && path === '/api/blog/del') {
-        const author = query.author || ''
+        const loginCheckResult = loginCheck(req)
+        if (loginCheckResult) {
+            return loginCheckResult
+        }
+        const author = req.session.username || ''
         return delBlog(id, author).then(data => {
             if (data) {
                 return new SuccessModel('删除成功')

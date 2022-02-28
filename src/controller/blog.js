@@ -3,7 +3,7 @@ const { exec } = require('../db/mysql')
 const getList = (author, keyword) => {
     let sql = `SELECT * FROM blogs WHERE 1=1 `
     if (author) {
-        sql += `AND author=${author} `
+        sql += `AND author='${author}' `
     }
     if (keyword) {
         sql += `AND title LIKE '%${keyword}%' `
@@ -19,8 +19,8 @@ const getDetail = (id) => {
     })
 }
 
-const newBlog = (blogData = {}) => {
-    let sql = `INSERT INTO blogs (title, content, createtime, author) VALUES ('${blogData.title}', '${blogData.content}', ${Date.now()}, '${blogData.author}');`
+const newBlog = (blogData = {}, author) => {
+    let sql = `INSERT INTO blogs (title, content, createtime, author) VALUES ('${blogData.title}', '${blogData.content}', ${Date.now()}, '${author}');`
     return exec(sql).then(insertData => {
         return {
             id: insertData.insertId
