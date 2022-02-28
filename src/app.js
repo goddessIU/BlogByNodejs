@@ -14,7 +14,7 @@ const getPostData = (req) => {
         if (req.method === 'GET') {
             resolve({})
             return
-        } 
+        }
         if (req.headers['content-type'] !== 'application/json') {
             resolve({})
             return
@@ -23,7 +23,7 @@ const getPostData = (req) => {
             let postData = ''
             req.on('data', chunk => {
                 postData += chunk.toString()
-            }) 
+            })
             req.on('end', () => {
                 if (!postData) {
                     resolve({})
@@ -49,10 +49,12 @@ handleCreateServer = (req, res) => {
     getPostData(req).then(postData => {
         req.body = postData
         const blogRes = handleBlogRouter(req)
+        console.log(blogRes)
         if (blogRes) {
+
             res.end(
                 JSON.stringify(blogRes)
-            );
+            )
             return
         }
         const userRes = handleUserRouter(req)
@@ -62,14 +64,12 @@ handleCreateServer = (req, res) => {
             )
             return
         }
-        res.end(
-            'wrong'
-        )
+        res.writeHead(404, { 'Content-type': 'text/plain' })
+        res.write('404 not found\n')
+        res.end()
     })
-    
-    res.writeHead(404, { 'Content-type': 'text/plain' })
-    res.write('404 not found\n')
-    res.end()
+
+
 }
 
 module.exports = handleCreateServer

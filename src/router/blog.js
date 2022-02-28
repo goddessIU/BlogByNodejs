@@ -2,24 +2,31 @@
  * @处理有关blog的路由
  * 
  */
+const { SuccessModel, FailModel } = require('../model/resModel')
+
 const handleBlogRouter = (req) => {
     const method = req.method
     const path = req.path
     const query = req.query
     if (method === 'GET' && path === '/api/blog/list') {
-        return 'success'
+        const res = 'ok'
+        return new SuccessModel(res)
     }
     if (method === 'GET' && path === '/api/blog/detail') {
-        return 'detail'
+        const res = 'ok'
+        return new SuccessModel(res)
     }
     if (method === 'POST' && path === '/api/blog/new') {
-        return 'new'
+        const res = 'ok'
+        return new SuccessModel(res)
     }
     if (method === 'POST' && path === '/api/blog/update') {
-        return 'update'
+        const res = 'ok'
+        return new SuccessModel(res)
     }
     if (method === 'POST' && path === '/api/blog/del') {
-        return 'del'
+        const res = 'ok'
+        return new SuccessModel(res)
     }
 }
 
