@@ -10,25 +10,43 @@ const handleBlogRouter = (req) => {
     const method = req.method
     const path = req.path
     const query = req.query
+    const blogData = req.body
+    const id = query.id
     if (method === 'GET' && path === '/api/blog/list') {
-        const res = getList()
-        return new SuccessModel(res)
+        const author = query.author || ''
+        const keyword = query.keyword || ''
+        return getList(author, keyword).then(data => {
+            return new SuccessModel(data)
+        })
     }
     if (method === 'GET' && path === '/api/blog/detail') {
-        const res = getDetail()
-        return new SuccessModel(res)
+        return getDetail(id).then(data => {
+            return new SuccessModel(data)
+        })
     }
     if (method === 'POST' && path === '/api/blog/new') {
-        const res = newBlog()
-        return new SuccessModel(res)
+        return newBlog(blogData).then(data => {
+            return new SuccessModel(data)
+        })
     }
     if (method === 'POST' && path === '/api/blog/update') {
-        const res = updateBlog()
-        return new SuccessModel(res)
+        return updateBlog(id, blogData).then(data => {
+            if (data) {
+                return new SuccessModel('更新成功')
+            } else {
+                return new FailModel('更新失败')
+            }
+        })
     }
     if (method === 'POST' && path === '/api/blog/del') {
-        const res = delBlog()
-        return new SuccessModel(res)
+        const author = query.author || ''
+        return delBlog(id, author).then(data => {
+            if (data) {
+                return new SuccessModel('删除成功')
+            } else {
+                return new FailModel('删除失败')
+            }
+        })
     }
 }
 

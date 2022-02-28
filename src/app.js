@@ -2,7 +2,6 @@
  * @description 用来建立总的服务器逻辑程序
  * @author george
  */
-
 const querystring = require('querystring')
 
 const handleBlogRouter = require('./router/blog')
@@ -45,23 +44,25 @@ handleCreateServer = (req, res) => {
     const path = url.split('?')[0]
     const query = url.split('?')[1]
     req.path = path
-    req.query = query
+    req.query = querystring.parse(query)
     getPostData(req).then(postData => {
         req.body = postData
         const blogRes = handleBlogRouter(req)
-        console.log(blogRes)
         if (blogRes) {
-
-            res.end(
-                JSON.stringify(blogRes)
-            )
-            return
+            blogRes.then(blogData => {
+                res.end(
+                    JSON.stringify(blogData)
+                )
+            })
+            return;
         }
         const userRes = handleUserRouter(req)
         if (userRes) {
-            res.end(
-                JSON.stringify(userRes)
-            )
+            userRes.then(userData => {
+                res.end(
+                    JSON.stringify(userData)
+                )
+            })
             return
         }
         res.writeHead(404, { 'Content-type': 'text/plain' })
